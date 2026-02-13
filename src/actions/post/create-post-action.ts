@@ -1,7 +1,7 @@
 'use server';
 
 import { makePartialPublicPost, PublicPost } from '@/dto/post/dto';
-import { getLoginSessionToken } from '@/lib/login/menage-login';
+import { getLoginSessionForApi } from '@/lib/login/manage-login';
 import { PostCreateSchema } from '@/lib/post/validations';
 import { PostModel } from '@/models/post/post-model';
 import { postRepository } from '@/repositories/post';
@@ -22,7 +22,7 @@ export async function createPostAction(
   prevState: CreatePostActionState,
   formData: FormData
 ): Promise<CreatePostActionState> {
-  const isAuthenticated = await getLoginSessionToken();
+  const isAuthenticated = await getLoginSessionForApi();
 
   if (!(formData instanceof FormData)) {
     return {

@@ -1,6 +1,6 @@
 'use server';
 
-import { getLoginSessionToken } from '@/lib/login/menage-login';
+import { getLoginSessionForApi } from '@/lib/login/manage-login';
 import { v2 as cloudinary } from 'cloudinary';
 
 type UploadImageActionResult = {
@@ -22,7 +22,7 @@ export async function uploadImageAction(
   // Função auxiliar para padronizar o retorno
   const makeResult = ({ url = '', error = '' }) => ({ url, error });
 
-  const isAuthenticated = await getLoginSessionToken();
+  const isAuthenticated = await getLoginSessionForApi();
 
   if (!isAuthenticated) {
     return makeResult({ error: 'Faça login novamente.' });

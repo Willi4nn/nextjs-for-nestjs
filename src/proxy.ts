@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT } from './lib/login/menage-login';
 
 export async function proxy(request: NextRequest) {
   const isLoginPage = request.nextUrl.pathname.startsWith('/admin/login');
@@ -15,10 +14,10 @@ export async function proxy(request: NextRequest) {
     process.env.LOGIN_COOKIE_NAME || 'loginSession'
   )?.value;
 
-  const isAuthenticated = await verifyJWT(jwtSession);
+  const isAuthenticated = !!jwtSession;
 
   if (!isAuthenticated) {
-    const loginUrl = new URL('/admin/login', request.url);
+    const loginUrl = new URL('/login', request.url);
     return NextResponse.redirect(loginUrl);
   }
 

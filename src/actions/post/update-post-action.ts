@@ -5,7 +5,7 @@ import {
   makePublicPostFromDb,
   PublicPost,
 } from '@/dto/post/dto';
-import { getLoginSessionToken } from '@/lib/login/menage-login';
+import { getLoginSessionForApi } from '@/lib/login/manage-login';
 import { PostUpdateSchema } from '@/lib/post/validations';
 import { postRepository } from '@/repositories/post';
 import { getZodErrorMessages } from '@/utils/get-zod-error-mensages';
@@ -23,7 +23,7 @@ export async function updatePostAction(
   prevState: UpdatePostActionState,
   formData: FormData
 ): Promise<UpdatePostActionState> {
-  const isAuthenticated = await getLoginSessionToken();
+  const isAuthenticated = await getLoginSessionForApi();
 
   if (!(formData instanceof FormData)) {
     return {

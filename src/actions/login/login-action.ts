@@ -1,12 +1,15 @@
 'use server';
 
-import { createLoginSession, verifyPassword } from '@/lib/login/menage-login';
+import { createLoginSessionFromApi } from '@/lib/login/manage-login';
+import { LoginSchema } from '@/lib/login/schemas';
+import { apiRequest } from '@/utils/api-request';
 import { asyncDelay } from '@/utils/async-delay';
+import { getZodErrorMessages } from '@/utils/get-zod-error-mensages';
 import { redirect } from 'next/navigation';
 
 type LoginActionState = {
-  username: string;
-  error: string;
+  email: string;
+  errors: string[];
 };
 
 export async function loginAction(state: LoginActionState, formData: FormData) {
@@ -14,8 +17,8 @@ export async function loginAction(state: LoginActionState, formData: FormData) {
 
   if (!allowLogin) {
     return {
-      username: '',
-      error: 'Logins estão desabilitados no momento.',
+      email: '',
+      errors: ['Logins estão desabilitados no momento.'],
     };
   }
 
@@ -23,34 +26,45 @@ export async function loginAction(state: LoginActionState, formData: FormData) {
 
   if (!(formData instanceof FormData)) {
     return {
-      username: '',
-      error: 'Formulário inválido.',
+      email: '',
+      errors: ['Formulário inválido.'],
     };
   }
 
-  const username = formData.get('username')?.toString().trim() || '';
-  const password = formData.get('password')?.toString().trim() || '';
+  const formObj = Object.fromEntries(formData.entries());
+  const formEmail = formObj?.email?.toString() || '';
+  const parsedFormData = LoginSchema.safeParse(formObj);
 
-  if (!username || !password) {
+  if (!parsedFormData.success) {
     return {
-      username,
-      error: 'Preencha todos os campos.',
+      email: formEmail,
+      errors: getZodErrorMessages(parsedFormData.error),
     };
   }
 
-  const validUsername = username === process.env.LOGIN_USER;
-  const validPassword = await verifyPassword(
-    password,
-    process.env.LOGIN_PASS || ''
+  const loginResponse = await apiRequest<{ accessToken: string }>(
+    '/auth/login',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(parsedFormData.data),
+    }
   );
 
-  if (!validUsername || !validPassword) {
+  if (!loginResponse.success) {
     return {
-      username,
-      error: 'Usuário ou senha inválidos.',
+      email: formEmail,
+      errors: loginResponse.errors,
     };
   }
 
-  await createLoginSession(username);
+  console.log(
+    'Login bem-sucedido. Token de acesso:',
+    loginResponse.data.accessToken
+  );
+
+  await createLoginSessionFromApi(loginResponse.data.accessToken);
   redirect('/admin/post');
 }

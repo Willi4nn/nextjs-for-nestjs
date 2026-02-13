@@ -1,6 +1,6 @@
 'use server';
 
-import { deleteLoginSession } from '@/lib/login/menage-login';
+import { deleteLoginSession } from '@/lib/login/manage-login';
 import { redirect } from 'next/navigation';
 
 export async function logoutAction() {

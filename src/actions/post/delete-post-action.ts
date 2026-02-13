@@ -1,11 +1,11 @@
 'use server';
 
-import { getLoginSessionToken } from '@/lib/login/menage-login';
+import { getLoginSessionForApi } from '@/lib/login/manage-login';
 import { postRepository } from '@/repositories/post';
 import { revalidateTag } from 'next/cache';
 
 export async function deletePostAction(id: string) {
-  const isAuthenticated = await getLoginSessionToken();
+  const isAuthenticated = await getLoginSessionForApi();
 
   if (!isAuthenticated) {
     return {

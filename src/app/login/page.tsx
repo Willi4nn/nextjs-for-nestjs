@@ -1,9 +1,10 @@
 import ErrorMessage from '@/components/ErrorMessage';
-import { LoginForm } from '../LoginForm';
+import { Metadata } from 'next';
+import { LoginForm } from '../../components/LoginForm';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Admin Login',
 };
 
