@@ -1,6 +1,6 @@
 import SinglePost from '@/components/SinglePost';
 import { SinglePostSkeleton } from '@/components/Skeleton/SinglePostSkeleton';
-import { findPublicBySlugPostCache } from '@/lib/post/queries/public';
+import { findPublicPostBySlugFromApiCached } from '@/lib/post/queries/public';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 
@@ -14,7 +14,13 @@ export async function generateMetadata(
   props: SlugPostProps
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const post = await findPublicBySlugPostCache(slug);
+  const postRes = await findPublicPostBySlugFromApiCached(slug);
+
+  if (!postRes.success) {
+    return {};
+  }
+
+  const post = postRes.data;
 
   return {
     title: post.title,

@@ -9,6 +9,7 @@ import {
   HouseIcon,
   LogOutIcon,
   PlusIcon,
+  UserPenIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -82,6 +83,12 @@ export default function MenuAdmin() {
         <FileTextIcon className="inline-block h-4 w-4" />
         Posts
       </Link>
+
+      <Link className={linkClasses} href="/admin/user">
+        <UserPenIcon className="inline-block h-4 w-4" />
+        Seus dados
+      </Link>
+
       <Link className={linkClasses} href="/admin/post/new">
         <PlusIcon className="inline-block h-4 w-4" />
         Criar Post

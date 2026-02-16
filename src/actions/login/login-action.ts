@@ -3,8 +3,8 @@
 import { createLoginSessionFromApi } from '@/lib/login/manage-login';
 import { LoginSchema } from '@/lib/login/schemas';
 import { apiRequest } from '@/utils/api-request';
-import { asyncDelay } from '@/utils/async-delay';
 import { getZodErrorMessages } from '@/utils/get-zod-error-mensages';
+import { verifyHoneypotInput } from '@/utils/verify-honeypot-input';
 import { redirect } from 'next/navigation';
 
 type LoginActionState = {
@@ -22,7 +22,14 @@ export async function loginAction(state: LoginActionState, formData: FormData) {
     };
   }
 
-  await asyncDelay(5000);
+  const isBot = await verifyHoneypotInput(formData, 5000);
+
+  if (isBot) {
+    return {
+      email: '',
+      errors: ['Detecção de bot ativada. Acesso negado.'],
+    };
+  }
 
   if (!(formData instanceof FormData)) {
     return {

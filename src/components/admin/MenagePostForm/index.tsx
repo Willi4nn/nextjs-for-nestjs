@@ -3,7 +3,10 @@
 import { createPostAction } from '@/actions/post/create-post-action';
 import { updatePostAction } from '@/actions/post/update-post-action';
 import InputText from '@/components/InputText';
-import { makePartialPublicPost, PublicPost } from '@/dto/post/dto';
+import {
+  PublicPostForApiDto,
+  PublicPostForApiSchema,
+} from '@/lib/post/schemas';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -14,7 +17,7 @@ import ImageUploader from '../ImageUploader';
 
 type MenagePostFormUpdateProps = {
   mode: 'update';
-  publicPost?: PublicPost;
+  publicPost?: PublicPostForApiDto;
 };
 type MenagePostFormCreateProps = {
   mode: 'create';
@@ -40,7 +43,7 @@ export default function MenagePostForm(props: MenagePostFormProps) {
   };
 
   const initialState = {
-    formState: makePartialPublicPost(publicPost),
+    formState: PublicPostForApiSchema.parse(publicPost || {}),
     errors: [],
   };
 
@@ -100,15 +103,6 @@ export default function MenagePostForm(props: MenagePostFormProps) {
         />
 
         <InputText
-          labelText="Autor"
-          name="author"
-          placeholder="Digite o nome do autor"
-          type="text"
-          defaultValue={formState.author}
-          disabled={isPending}
-        />
-
-        <InputText
           labelText="Título"
           name="title"
           placeholder="Digite o título"
@@ -145,13 +139,15 @@ export default function MenagePostForm(props: MenagePostFormProps) {
           disabled={isPending}
         />
 
-        <InputCheckbox
-          labelText="Publicar?"
-          name="published"
-          type="checkbox"
-          defaultChecked={formState.published}
-          disabled={isPending}
-        />
+        {mode === 'update' && (
+          <InputCheckbox
+            labelText="Publicar?"
+            name="published"
+            type="checkbox"
+            defaultChecked={formState.published}
+            disabled={isPending}
+          />
+        )}
       </div>
 
       <div>

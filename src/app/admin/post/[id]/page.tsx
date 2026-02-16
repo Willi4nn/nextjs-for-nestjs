@@ -1,6 +1,6 @@
 import MenagePostForm from '@/components/admin/MenagePostForm';
-import { makePublicPostFromDb } from '@/dto/post/dto';
-import { findPostByAdmin } from '@/lib/post/queries/admin';
+import { findPostByIdFromApiAdmin } from '@/lib/post/queries/admin';
+import { PublicPostForApiSchema } from '@/lib/post/schemas';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -16,11 +16,15 @@ type AdminPostIdProps = {
 
 export default async function AdminPostId({ params }: AdminPostIdProps) {
   const { id } = await params;
-  const post = await findPostByAdmin(id).catch(() => null);
+  const postRes = await findPostByIdFromApiAdmin(id);
 
-  if (!post) notFound();
+  if (!postRes.success) {
+    console.log(postRes.errors);
+    notFound();
+  }
 
-  const publicPost = makePublicPostFromDb(post);
+  const post = postRes.data;
+  const publicPost = PublicPostForApiSchema.parse(post);
 
   return (
     <div className="flex flex-col gap-6">

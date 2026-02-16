@@ -1,13 +1,27 @@
-import { findAllPostsAdmin } from '@/lib/post/queries/admin';
+import { findAllPostsFromApiAdmin } from '@/lib/post/queries/admin';
 import Link from 'next/link';
 import ErrorMessage from '../../ErrorMessage';
 import DeletePostButton from '../DeletePostButton';
 
 export default async function PostsListAdmin() {
-  const posts = await findAllPostsAdmin();
+  const postsRes = await findAllPostsFromApiAdmin();
 
-  if (posts.length === 0) {
-    return <ErrorMessage content="Bora criar seu primeiro post?" />;
+  if (!postsRes.success) {
+    console.log(postsRes.errors);
+
+    return (
+      <ErrorMessage
+        contentTitle="Ei 😅"
+        content="Tente fazer login novamente"
+      />
+    );
+  }
+
+  const posts = postsRes.data;
+  if (posts.length <= 0) {
+    return (
+      <ErrorMessage contentTitle="Ei 😅" content="Bora criar algum post??" />
+    );
   }
 
   return (
@@ -20,7 +34,11 @@ export default async function PostsListAdmin() {
           >
             <Link href={`/admin/post/${post.id}`}>{post.title}</Link>
 
-            {!post.published && <span> (Draft)</span>}
+            {!post.published && (
+              <span className="text-xs text-slate-600 italic">
+                (Não publicado)
+              </span>
+            )}
 
             <DeletePostButton id={post.id} title={post.title} />
           </div>

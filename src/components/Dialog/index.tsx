@@ -46,9 +46,12 @@ export default function Dialog({
         >
           {title}
         </h2>
-        <p id="dialog-description" className="mb-4 text-sm dark:text-slate-300">
+        <div
+          id="dialog-description"
+          className="mb-4 text-sm dark:text-slate-300"
+        >
           {content}
-        </p>
+        </div>
         <div className="mt-4 flex justify-around">
           <Button
             variant="ghost"
