@@ -4,7 +4,7 @@ import { PostFeaturedSkeleton } from '@/components/Skeleton/PostFeaturedSkeleton
 import { PostsListSkeleton } from '@/components/Skeleton/PostsListSkeleton';
 import { Suspense } from 'react';
 
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   return (
